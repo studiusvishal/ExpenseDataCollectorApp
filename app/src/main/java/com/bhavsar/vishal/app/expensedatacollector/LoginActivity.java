@@ -58,6 +58,11 @@ public class LoginActivity extends AppCompatActivity {
         loginProgressBar = findViewById(R.id.progressBar);
         editTextUsername.requestFocus();
 
+        if (BuildConfig.DEBUG) {
+            editTextUsername.setText(BuildConfig.USERNAME);
+            editTextPassword.setText(BuildConfig.PASSWORD);
+        }
+
         loginButton.setOnClickListener(this::onClickLoginButton);
         sharedpreferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         addToSharedPreferences(KEY_BASE_URL, BASE_URL);
@@ -144,7 +149,7 @@ public class LoginActivity extends AppCompatActivity {
         final Intent intent = new Intent(this, MainActivity.class);
         addToSharedPreferences(AUTHORIZATION, result);
         startActivity(intent);
-        Toast.makeText(LoginActivity.this, "Login successful!!!", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Login successful!!!", Toast.LENGTH_SHORT).show();
     }
 
     private void addToSharedPreferences(final String key, final String value) {

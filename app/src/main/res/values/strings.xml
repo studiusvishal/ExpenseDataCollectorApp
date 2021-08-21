@@ -2,4 +2,16 @@
     <string name="log_in">Log in</string>
     <string name="sign_up">Sign Up</string>
     <string name="proceed_to_login">Proceed to Login</string>
+    <string name="add_new_expense">Add New Expense</string>
+    <string name="expense_date">Set date</string>
+    <string name="select_date">Select Date:</string>
+    <string name="select_date_calendar_icon">Select date calendar icon</string>
+    <string name="select_category">Select category:</string>
+    <string name="enter_description_for_expense">Enter description for expense</string>
+    <string name="amount">Amount:</string>
+    <string name="currency_dollar">$</string>
+    <string name="description">Description:</string>
+    <string name="reset">Reset</string>
+    <string name="save">Save</string>
+    <string name="add_new_expense_label">ADD NEW EXPENSE</string>
 </resources>
