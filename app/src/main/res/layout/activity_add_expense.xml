@@ -105,6 +105,7 @@
         android:layout_marginEnd="24sp"
         android:layout_marginRight="24sp"
         android:ems="10"
+        android:text="@string/default_expense_amount"
         android:gravity="start|center_vertical"
         android:inputType="numberDecimal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -164,9 +165,10 @@
         android:layout_marginStart="76dp"
         android:layout_marginLeft="76dp"
         android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:onClick="onClickResetButton"
         android:text="@string/reset"
         android:textSize="20sp"
-        android:gravity="center"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextDescription" />
 

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string-array name="select_category">
-        <item>Please select</item>
-        <item>Apartment Rent</item>
-        <item>Utilities</item>
-    </string-array>
-</resources>

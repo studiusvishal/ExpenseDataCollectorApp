@@ -51,20 +51,20 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        sharedpreferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+
+        // Launch main screen for development
+        if (BuildConfig.DEBUG) {
+            startMainActivity();
+            return;
+        }
 
         editTextUsername = findViewById(R.id.textUsername);
         editTextPassword = findViewById(R.id.passwordTextbox);
         final Button loginButton = findViewById(R.id.loginButton);
         loginProgressBar = findViewById(R.id.progressBar);
         editTextUsername.requestFocus();
-
-        if (BuildConfig.DEBUG) {
-            editTextUsername.setText(BuildConfig.USERNAME);
-            editTextPassword.setText(BuildConfig.PASSWORD);
-        }
-
         loginButton.setOnClickListener(this::onClickLoginButton);
-        sharedpreferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         addToSharedPreferences(KEY_BASE_URL, BASE_URL);
     }
 
@@ -150,6 +150,10 @@ public class LoginActivity extends AppCompatActivity {
         addToSharedPreferences(AUTHORIZATION, result);
         startActivity(intent);
         Toast.makeText(getApplicationContext(), "Login successful!!!", Toast.LENGTH_SHORT).show();
+    }
+
+    private void startMainActivity() {
+        login(BuildConfig.USERNAME, BuildConfig.PASSWORD, this::onLoginSuccess);
     }
 
     private void addToSharedPreferences(final String key, final String value) {
