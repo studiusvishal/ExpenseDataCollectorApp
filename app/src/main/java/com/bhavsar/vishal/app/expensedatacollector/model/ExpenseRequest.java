@@ -15,8 +15,7 @@ import lombok.Data;
 public class ExpenseRequest {
     private String endpoint;
 
-    @Builder.Default
-    private int methodType = Request.Method.POST;
+    @Builder.Default private int methodType = Request.Method.POST;
 
     private JSONObject requestBody;
     private Response.ErrorListener errorListener;

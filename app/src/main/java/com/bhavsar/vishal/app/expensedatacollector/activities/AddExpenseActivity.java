@@ -1,13 +1,14 @@
 package com.bhavsar.vishal.app.expensedatacollector.activities;
 
-import static com.bhavsar.vishal.app.expensedatacollector.Constants.APP_PREFERENCES;
-import static com.bhavsar.vishal.app.expensedatacollector.Constants.AUTHORIZATION;
+import static com.bhavsar.vishal.app.expensedatacollector.Constants.KEY_AUTHORIZATION;
+import static com.bhavsar.vishal.app.expensedatacollector.Constants.KEY_CATEGORY;
+import static com.bhavsar.vishal.app.expensedatacollector.Constants.KEY_DESCRIPTION;
+import static com.bhavsar.vishal.app.expensedatacollector.Constants.KEY_EXPENSE_AMOUNT;
+import static com.bhavsar.vishal.app.expensedatacollector.Constants.KEY_EXPENSE_DATE;
+import static com.bhavsar.vishal.app.expensedatacollector.Constants.KEY_ID;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -19,12 +20,10 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.bhavsar.vishal.app.expensedatacollector.BudgetApp;
 import com.bhavsar.vishal.app.expensedatacollector.DatePickerFragment;
@@ -34,6 +33,7 @@ import com.bhavsar.vishal.app.expensedatacollector.http.HttpRequestUtil;
 import com.bhavsar.vishal.app.expensedatacollector.model.ExpenseRecord;
 import com.bhavsar.vishal.app.expensedatacollector.model.GenericRequest;
 import com.bhavsar.vishal.app.expensedatacollector.util.DateUtility;
+import com.bhavsar.vishal.app.expensedatacollector.util.SharedPreferencesUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -50,15 +50,13 @@ import lombok.SneakyThrows;
 
 public class AddExpenseActivity extends AppCompatActivity {
 
-    private static final List<String> itemList = Arrays.asList("Select",
-            "Apartment Rent",
-            "Credit card",
-            "Fuel");
+    private static final List<String> itemList =
+            Arrays.asList("Select", "Apartment Rent", "Credit card", "Fuel");
+    private final SharedPreferencesUtil sharedPreferencesUtil = SharedPreferencesUtil.getInstance();
     private EditText expenseDateEditText;
     private Spinner categorySpinner;
     private EditText expenseAmountEditText;
     private EditText expenseDescriptionEditText;
-    private SharedPreferences sharedpreferences;
     private ProgressBar progressBar;
     private Context context;
 
@@ -66,13 +64,13 @@ public class AddExpenseActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_expense);
-        sharedpreferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
 
         // https://stackoverflow.com/questions/4989817/set-the-textsize-to-a-text-in-spinner-in-android-programatically
         // https://stackoverflow.com/questions/9476665/how-to-change-spinner-text-size-and-text-color
         // TODO: Get from DB
         categorySpinner = findViewById(R.id.spinnerExpenseCategory);
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, itemList);
+        final ArrayAdapter<String> arrayAdapter =
+                new ArrayAdapter<>(this, R.layout.spinner_item, itemList);
         categorySpinner.setAdapter(arrayAdapter);
 
         expenseDateEditText = findViewById(R.id.editTextDate);
@@ -90,11 +88,6 @@ public class AddExpenseActivity extends AppCompatActivity {
         saveButton.setOnClickListener(this::onClickSaveButton);
 
         context = BudgetApp.getContext();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
     public void onClickSelectDateButton(final View view) {
@@ -126,32 +119,36 @@ public class AddExpenseActivity extends AppCompatActivity {
         final double expenseAmount = Double.parseDouble(strExpenseAmount);
 
         final String expenseDescription = expenseDescriptionEditText.getText().toString();
-        final ExpenseRecord expenseRecord = ExpenseRecord.builder()
-                .expenseDate(expenseDate)
-                .category(expenseCategory)
-                .expenseAmount(expenseAmount)
-                .description(expenseDescription)
-                .id(generateRandomId())
-                .build();
+        final ExpenseRecord expenseRecord =
+                ExpenseRecord.builder()
+                        .expenseDate(expenseDate)
+                        .category(expenseCategory)
+                        .expenseAmount(expenseAmount)
+                        .description(expenseDescription)
+                        .id(generateRandomId())
+                        .build();
         saveRecord(expenseRecord, this::onSaveSuccess);
     }
 
     private void saveRecord(final ExpenseRecord expenseRecord, final SaveRecordCallback callback) {
         progressBar.setVisibility(View.VISIBLE);
-        final GenericRequest<JSONObject> genericRequest = GenericRequest.<JSONObject>builder()
-                .endpoint("/saveData")
-                .errorListener(this::onErrorResponse)
-                .responseListener(callback::onSaveSuccess)
-                .requestBody(prepareBody(expenseRecord))
-                .headers(getHeaders())
-                .methodType(Request.Method.POST)
-                .build();
+        final GenericRequest<JSONObject> genericRequest =
+                GenericRequest.<JSONObject>builder()
+                        .endpoint("/saveData")
+                        .errorListener(this::onErrorResponse)
+                        .responseListener(callback::onSaveSuccess)
+                        .requestBody(prepareBody(expenseRecord))
+                        .headers(getHeaders())
+                        .methodType(Request.Method.POST)
+                        .build();
         HttpRequestUtil.sendRequest(genericRequest);
     }
 
     private Map<String, String> getHeaders() {
         final Map<String, String> headers = new HashMap<>();
-        headers.put(AUTHORIZATION, sharedpreferences.getString(AUTHORIZATION, null));
+        headers.put(
+                KEY_AUTHORIZATION,
+                sharedPreferencesUtil.getString(KEY_AUTHORIZATION, null));
         return headers;
     }
 
@@ -162,9 +159,10 @@ public class AddExpenseActivity extends AppCompatActivity {
             Toast.makeText(context, "Failed to save record!!!", Toast.LENGTH_SHORT).show();
             return;
         }
-        Toast.makeText(context,
-                "Record saved with id " + response.getString("id"),
-                Toast.LENGTH_LONG)
+        Toast.makeText(
+                        context,
+                        "Record saved with id " + response.getString("id"),
+                        Toast.LENGTH_LONG)
                 .show();
     }
 
@@ -188,11 +186,11 @@ public class AddExpenseActivity extends AppCompatActivity {
          */
         try {
             final Date expenseDate = expenseRecord.getExpenseDate();
-            jsonBody.put("expenseDate", DateUtility.getDateFormat().format(expenseDate));
-            jsonBody.put("description", expenseRecord.getDescription());
-            jsonBody.put("category", expenseRecord.getCategory());
-            jsonBody.put("expenseAmount", expenseRecord.getExpenseAmount());
-            jsonBody.put("id", expenseRecord.getId());
+            jsonBody.put(KEY_EXPENSE_DATE, DateUtility.getDateFormat().format(expenseDate));
+            jsonBody.put(KEY_DESCRIPTION, expenseRecord.getDescription());
+            jsonBody.put(KEY_CATEGORY, expenseRecord.getCategory());
+            jsonBody.put(KEY_EXPENSE_AMOUNT, expenseRecord.getExpenseAmount());
+            jsonBody.put(KEY_ID, expenseRecord.getId());
         } catch (final JSONException e) {
             Log.e("ADD_EXPENSE", e.toString());
         }

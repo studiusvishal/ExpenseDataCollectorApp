@@ -4,24 +4,25 @@
     android:viewportWidth="108"
     android:viewportHeight="108"
     android:tint="?attr/colorControlNormal">
-  <group android:scaleX="1.9070526"
-      android:scaleY="1.9070526"
-      android:translateX="31.115368"
-      android:translateY="32.174843">
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M4,10h3v7h-3z"/>
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M10.5,10h3v7h-3z"/>
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M2,19h20v3h-20z"/>
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M17,10h3v7h-3z"/>
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M12,1l-10,5l0,2l20,0l0,-2z"/>
-  </group>
+    <group
+        android:scaleX="1.9070526"
+        android:scaleY="1.9070526"
+        android:translateX="31.115368"
+        android:translateY="32.174843">
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M4,10h3v7h-3z" />
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M10.5,10h3v7h-3z" />
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M2,19h20v3h-20z" />
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M17,10h3v7h-3z" />
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M12,1l-10,5l0,2l20,0l0,-2z" />
+    </group>
 </vector>

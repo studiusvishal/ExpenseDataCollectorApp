@@ -14,7 +14,8 @@ import com.bhavsar.vishal.app.expensedatacollector.util.DateUtility;
 
 import java.util.Calendar;
 
-public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+public class DatePickerFragment extends DialogFragment
+        implements DatePickerDialog.OnDateSetListener {
     private final EditText editTextDate;
 
     public DatePickerFragment(final EditText editTextDate) {
@@ -33,14 +34,15 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         final int day = c.get(Calendar.DAY_OF_MONTH);
 
         // Create a new instance of DatePickerDialog and return it
-        final DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), this, year, month, day);
+        final DatePickerDialog datePickerDialog =
+                new DatePickerDialog(getActivity(), this, year, month, day);
         datePickerDialog.getDatePicker().setMaxDate(c.getTimeInMillis());
         return datePickerDialog;
     }
 
     @Override
-    public void onDateSet(final DatePicker datePicker,
-                          final int year, final int month, final int dayOfMonth) {
+    public void onDateSet(
+            final DatePicker datePicker, final int year, final int month, final int dayOfMonth) {
         final Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month);

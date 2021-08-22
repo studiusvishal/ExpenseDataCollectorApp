@@ -33,7 +33,7 @@ def getCurrentFlavor() {
     def pattern = Pattern.compile("([A-Z][A-Za-z]+)(Release|Debug)")
     def flavor = ""
 
-    gradle.getStartParameter().getTaskNames().any {name ->
+    gradle.getStartParameter().getTaskNames().any { name ->
         Matcher matcher = pattern.matcher(name)
         if (matcher.find()) {
             flavor = matcher.group(1).toLowerCase()

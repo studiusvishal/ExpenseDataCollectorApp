@@ -3,7 +3,7 @@
     <string name="sign_up">Sign Up</string>
     <string name="proceed_to_login">Proceed to Login</string>
     <string name="add_new_expense">Add New Expense</string>
-<!--    <string name="expense_date">Set date</string>-->
+    <!--    <string name="expense_date">Set date</string>-->
     <string name="select_date">Select Expense Date</string>
     <string name="select_date_calendar_icon">Select date calendar icon</string>
     <string name="select_category">Select Expense Category</string>
