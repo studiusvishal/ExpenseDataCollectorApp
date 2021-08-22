@@ -1,12 +1,13 @@
 package com.bhavsar.vishal.app.expensedatacollector.activities;
 
-import static com.bhavsar.vishal.app.expensedatacollector.BuildConfig.BASE_URL;
 import static com.bhavsar.vishal.app.expensedatacollector.Constants.APP_PREFERENCES;
 import static com.bhavsar.vishal.app.expensedatacollector.Constants.AUTHORIZATION;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -18,23 +19,23 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import com.bhavsar.vishal.app.expensedatacollector.BudgetApp;
 import com.bhavsar.vishal.app.expensedatacollector.DatePickerFragment;
 import com.bhavsar.vishal.app.expensedatacollector.R;
 import com.bhavsar.vishal.app.expensedatacollector.callbacks.SaveRecordCallback;
+import com.bhavsar.vishal.app.expensedatacollector.http.HttpRequestUtil;
 import com.bhavsar.vishal.app.expensedatacollector.model.ExpenseRecord;
+import com.bhavsar.vishal.app.expensedatacollector.model.GenericRequest;
 import com.bhavsar.vishal.app.expensedatacollector.util.DateUtility;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -59,6 +60,7 @@ public class AddExpenseActivity extends AppCompatActivity {
     private EditText expenseDescriptionEditText;
     private SharedPreferences sharedpreferences;
     private ProgressBar progressBar;
+    private Context context;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -86,6 +88,8 @@ public class AddExpenseActivity extends AppCompatActivity {
         selectDateButton.setOnClickListener(this::onClickSelectDateButton);
         resetButton.setOnClickListener(this::onClickResetButton);
         saveButton.setOnClickListener(this::onClickSaveButton);
+
+        context = BudgetApp.getContext();
     }
 
     @Override
@@ -107,8 +111,20 @@ public class AddExpenseActivity extends AppCompatActivity {
 
     public void onClickSaveButton(final View view) {
         final Date expenseDate = DateUtility.parseDate(expenseDateEditText.getText().toString());
+
         final String expenseCategory = categorySpinner.getSelectedItem().toString();
-        final double expenseAmount = Double.parseDouble(expenseAmountEditText.getText().toString());
+        if (expenseCategory.equalsIgnoreCase("Select")) {
+            Toast.makeText(context, "Please select expense category.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        final String strExpenseAmount = expenseAmountEditText.getText().toString();
+        if (StringUtils.isEmpty(strExpenseAmount)) {
+            Toast.makeText(context, "Please enter expense amount.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        final double expenseAmount = Double.parseDouble(strExpenseAmount);
+
         final String expenseDescription = expenseDescriptionEditText.getText().toString();
         final ExpenseRecord expenseRecord = ExpenseRecord.builder()
                 .expenseDate(expenseDate)
@@ -118,58 +134,44 @@ public class AddExpenseActivity extends AppCompatActivity {
                 .id(generateRandomId())
                 .build();
         saveRecord(expenseRecord, this::onSaveSuccess);
-        // stringSave(expenseRecord, this::onStringSuccess);
     }
 
     private void saveRecord(final ExpenseRecord expenseRecord, final SaveRecordCallback callback) {
         progressBar.setVisibility(View.VISIBLE);
-        final String authHeader = sharedpreferences.getString(AUTHORIZATION, null);
-        final RequestQueue requestQueue = Volley.newRequestQueue(this);
-        final String postUrl = BASE_URL + "/saveData";
+        final GenericRequest<JSONObject> genericRequest = GenericRequest.<JSONObject>builder()
+                .endpoint("/saveData")
+                .errorListener(this::onErrorResponse)
+                .responseListener(callback::onSaveSuccess)
+                .requestBody(prepareBody(expenseRecord))
+                .headers(getHeaders())
+                .methodType(Request.Method.POST)
+                .build();
+        HttpRequestUtil.sendRequest(genericRequest);
+    }
 
-        final JSONObject requestBody = prepareBody(expenseRecord);
-
-        final Response.ErrorListener errorListener = this::onErrorResponse;
-        final Response.Listener<JSONObject> responseListener = callback::onSaveSuccess;
-
-        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
-                postUrl, requestBody, responseListener, errorListener) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                final Map<String, String> superHeaders = super.getHeaders();
-                final Map<String, String> headers = new HashMap<>(superHeaders);
-                headers.put(AUTHORIZATION, authHeader);
-                return headers;
-            }
-        };
-        // https://stackoverflow.com/questions/25994514/volley-timeout-error
-        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 50000;
-            }
-
-            @Override
-            public int getCurrentRetryCount() {
-                return 50000;
-            }
-
-            @Override
-            public void retry(final VolleyError error) {
-                Toast.makeText(AddExpenseActivity.this, "Timeout occurred while saving record!!!", Toast.LENGTH_LONG).show();
-            }
-        });
-        requestQueue.add(jsonObjectRequest);
+    private Map<String, String> getHeaders() {
+        final Map<String, String> headers = new HashMap<>();
+        headers.put(AUTHORIZATION, sharedpreferences.getString(AUTHORIZATION, null));
+        return headers;
     }
 
     @SneakyThrows
-    private void onSaveSuccess(final JSONObject recordId) {
+    private void onSaveSuccess(final JSONObject response) {
         progressBar.setVisibility(View.GONE);
-        if (recordId == null) {
-            Toast.makeText(AddExpenseActivity.this, "Failed to save record!!!", Toast.LENGTH_LONG).show();
+        if (response == null) {
+            Toast.makeText(context, "Failed to save record!!!", Toast.LENGTH_SHORT).show();
             return;
         }
-        Toast.makeText(AddExpenseActivity.this, "Record saved with id=" + recordId.getString("id"), Toast.LENGTH_LONG).show();
+        Toast.makeText(context,
+                "Record saved with id " + response.getString("id"),
+                Toast.LENGTH_LONG)
+                .show();
+    }
+
+    private void onErrorResponse(final VolleyError error) {
+        Log.e("Save Record: ", Arrays.toString(error.getStackTrace()));
+        progressBar.setVisibility(View.GONE);
+        Toast.makeText(context, "Failed to save data!!!", Toast.LENGTH_SHORT).show();
     }
 
     @NonNull
@@ -192,18 +194,12 @@ public class AddExpenseActivity extends AppCompatActivity {
             jsonBody.put("expenseAmount", expenseRecord.getExpenseAmount());
             jsonBody.put("id", expenseRecord.getId());
         } catch (final JSONException e) {
-            e.printStackTrace();
+            Log.e("ADD_EXPENSE", e.toString());
         }
         return jsonBody;
     }
 
     private long generateRandomId() {
         return new Random().nextLong();
-    }
-
-    private void onErrorResponse(final VolleyError error) {
-        Log.e("Save Record: ", Arrays.toString(error.getStackTrace()));
-        progressBar.setVisibility(View.GONE);
-        Toast.makeText(getApplicationContext(), "Failed to save data!!!", Toast.LENGTH_SHORT).show();
     }
 }

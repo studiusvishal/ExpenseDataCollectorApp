@@ -6,7 +6,6 @@ import static com.bhavsar.vishal.app.expensedatacollector.Constants.APP_PREFEREN
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,29 +15,23 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bhavsar.vishal.app.expensedatacollector.BuildConfig;
 import com.bhavsar.vishal.app.expensedatacollector.Constants;
 import com.bhavsar.vishal.app.expensedatacollector.R;
 import com.bhavsar.vishal.app.expensedatacollector.callbacks.LoginCallback;
+import com.bhavsar.vishal.app.expensedatacollector.http.HttpRequestUtil;
+import com.bhavsar.vishal.app.expensedatacollector.model.GenericRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -73,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
         final String password = editTextPassword.getText().toString();
 
         if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(LoginActivity.this, "Please enter all details.", Toast.LENGTH_LONG).show();
+            Toast.makeText(LoginActivity.this, "Please enter all details.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -90,41 +83,14 @@ public class LoginActivity extends AppCompatActivity {
         final Response.ErrorListener errorListener = error -> Log.e("Login: ", Arrays.toString(error.getStackTrace()));
         final Response.Listener<String> responseListener = callback::onSuccess;
 
-        // https://stackoverflow.com/questions/33573803/how-to-send-a-post-request-using-volley-with-string-body
-        final StringRequest jsonObjectRequest = new StringRequest(Request.Method.POST,
-                postUrl, responseListener, errorListener) {
-
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-            @Override
-            public byte[] getBody() {
-                return requestBody.getBytes(StandardCharsets.UTF_8);
-            }
-
-            @Override
-            protected Response<String> parseNetworkResponse(final NetworkResponse response) {
-                final String parsed = Objects.requireNonNull(Objects.requireNonNull(response.headers).get(Constants.AUTHORIZATION));
-                return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
-            }
-        };
-
-        // https://stackoverflow.com/questions/25994514/volley-timeout-error
-        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 50000;
-            }
-
-            @Override
-            public int getCurrentRetryCount() {
-                return 50000;
-            }
-
-            @Override
-            public void retry(final VolleyError error) {
-                Toast.makeText(LoginActivity.this, "Timeout occurred while logging in!!!", Toast.LENGTH_LONG).show();
-            }
-        });
-        requestQueue.add(jsonObjectRequest);
+        final GenericRequest<String> loginRequest = GenericRequest.<String>builder()
+                .endpoint("/login")
+                .methodType(Request.Method.POST)
+                .requestBody(requestBody)
+                .responseListener(responseListener)
+                .errorListener(errorListener)
+                .build();
+        HttpRequestUtil.sendRequest(loginRequest);
     }
 
     @NonNull

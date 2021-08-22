@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         applicationId "com.bhavsar.vishal.app.expensedatacollector"
-        minSdkVersion 16
+        minSdkVersion 20
         targetSdkVersion 31
         versionCode 1
         versionName "1.0"
@@ -31,10 +31,11 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         rootProject.ext.config.each(p -> {
-            if (p.key == 'APP_NAME') {
+            if (p.key == 'CURRENT_TIMEOUT' || p.key == 'CURRENT_RETRY_COUNT') {
+                buildConfigField 'int', p.key, p.value
+            } else if (p.key == 'APP_NAME') {
                 resValue 'string', p.key.toLowerCase(), p.value.replace("\"", "")
-            }
-            if (p.key != 'VERSION_CODE' && p.key != 'VERSION_NAME' && p.key != 'APPLICATION_ID') {
+            } else if (p.key != 'VERSION_CODE' && p.key != 'VERSION_NAME' && p.key != 'APPLICATION_ID') {
                 buildConfigField 'String', p.key, p.value
             }
         })
@@ -83,4 +84,6 @@ dependencies {
     // Volley
     implementation 'com.android.volley:volley:1.2.0'
     implementation 'com.google.code.gson:gson:2.8.7'
+
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
 }
