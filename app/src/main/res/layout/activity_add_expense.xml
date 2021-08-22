@@ -5,7 +5,7 @@
     android:id="@+id/add_expense_constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddExpenseActivity">
+    tools:context=".activities.AddExpenseActivity">
 
     <TextView
         android:id="@+id/selectDateTextView"
@@ -27,7 +27,9 @@
         android:layout_marginTop="156dp"
         android:layout_marginBottom="24dp"
         android:autofillHints="mm/dd/yyyy"
+        android:editable="false"
         android:ems="10"
+        android:focusable="false"
         android:gravity="start|center_vertical"
         android:inputType="date"
         android:textSize="20sp"
@@ -45,14 +47,13 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="24dp"
+        android:contentDescription="@string/select_date_calendar_icon"
         android:minWidth="48dp"
-        android:onClick="onClickSelectDateButton"
         app:layout_constraintBottom_toTopOf="@+id/spinnerExpenseCategory"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/editTextDate"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/round_edit_calendar_20"
-        android:contentDescription="@string/select_date_calendar_icon"
         tools:ignore="UsingOnClickInXml" />
 
     <TextView
@@ -104,14 +105,14 @@
         android:layout_marginTop="24sp"
         android:layout_marginEnd="24sp"
         android:layout_marginRight="24sp"
+        android:autofillHints="0.00"
         android:ems="10"
-        android:text="@string/default_expense_amount"
         android:gravity="start|center_vertical"
         android:inputType="numberDecimal"
+        android:text="@string/default_expense_amount"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinnerExpenseCategory"
-        tools:ignore="SpeakableTextPresentCheck"
-        android:autofillHints="0.00" />
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <TextView
         android:id="@+id/textViewCurrency"
@@ -166,7 +167,6 @@
         android:layout_marginLeft="76dp"
         android:layout_marginTop="24dp"
         android:gravity="center"
-        android:onClick="onClickResetButton"
         android:text="@string/reset"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -181,9 +181,9 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="88dp"
         android:layout_marginRight="88dp"
+        android:gravity="center"
         android:text="@string/save"
         android:textSize="20sp"
-        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/buttonReset"
         app:layout_constraintTop_toBottomOf="@+id/editTextDescription" />
@@ -198,6 +198,24 @@
         android:text="@string/add_new_expense_label"
         android:textSize="40sp"
         app:layout_constraintBottom_toTopOf="@+id/selectDateTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/saveExpenseRecordProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginBottom="24dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"

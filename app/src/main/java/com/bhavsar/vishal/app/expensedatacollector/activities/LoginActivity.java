@@ -1,6 +1,7 @@
-package com.bhavsar.vishal.app.expensedatacollector;
+package com.bhavsar.vishal.app.expensedatacollector.activities;
 
 import static com.bhavsar.vishal.app.expensedatacollector.BuildConfig.BASE_URL;
+import static com.bhavsar.vishal.app.expensedatacollector.Constants.APP_PREFERENCES;
 
 import android.content.Context;
 import android.content.Intent;
@@ -27,20 +28,19 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bhavsar.vishal.app.expensedatacollector.BuildConfig;
+import com.bhavsar.vishal.app.expensedatacollector.Constants;
+import com.bhavsar.vishal.app.expensedatacollector.R;
+import com.bhavsar.vishal.app.expensedatacollector.callbacks.LoginCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
-    private static final String APP_PREFERENCES = "Preferences";
-    private static final String AUTHORIZATION = "Authorization";
-    private static final String KEY_BASE_URL = "BASE_URL";
 
     private EditText editTextUsername;
     private EditText editTextPassword;
@@ -52,6 +52,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         sharedpreferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        addToSharedPreferences(Constants.KEY_BASE_URL, BASE_URL);
+        loginProgressBar = findViewById(R.id.progressBar);
 
         // Launch main screen for development
         if (BuildConfig.DEBUG) {
@@ -62,10 +64,8 @@ public class LoginActivity extends AppCompatActivity {
         editTextUsername = findViewById(R.id.textUsername);
         editTextPassword = findViewById(R.id.passwordTextbox);
         final Button loginButton = findViewById(R.id.loginButton);
-        loginProgressBar = findViewById(R.id.progressBar);
         editTextUsername.requestFocus();
         loginButton.setOnClickListener(this::onClickLoginButton);
-        addToSharedPreferences(KEY_BASE_URL, BASE_URL);
     }
 
     private void onClickLoginButton(final View view) {
@@ -77,12 +77,12 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        loginProgressBar.setVisibility(View.VISIBLE);
-
         login(username, password, this::onLoginSuccess);
     }
 
     private void login(final String username, final String password, final LoginCallback callback) {
+        loginProgressBar.setVisibility(View.VISIBLE);
+
         final RequestQueue requestQueue = Volley.newRequestQueue(this);
         final String postUrl = BASE_URL + "/login";
 
@@ -102,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             protected Response<String> parseNetworkResponse(final NetworkResponse response) {
-                final String parsed = Objects.requireNonNull(Objects.requireNonNull(response.headers).get(AUTHORIZATION));
+                final String parsed = Objects.requireNonNull(Objects.requireNonNull(response.headers).get(Constants.AUTHORIZATION));
                 return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
             }
         };
@@ -147,7 +147,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         final Intent intent = new Intent(this, MainActivity.class);
-        addToSharedPreferences(AUTHORIZATION, result);
+        addToSharedPreferences(Constants.AUTHORIZATION, result);
         startActivity(intent);
         Toast.makeText(getApplicationContext(), "Login successful!!!", Toast.LENGTH_SHORT).show();
     }

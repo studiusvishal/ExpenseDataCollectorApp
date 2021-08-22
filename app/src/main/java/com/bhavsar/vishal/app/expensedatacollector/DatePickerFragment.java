@@ -28,9 +28,9 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
         // Use the current date as the default date in the picker
         final Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
+        final int year = c.get(Calendar.YEAR);
+        final int month = c.get(Calendar.MONTH);
+        final int day = c.get(Calendar.DAY_OF_MONTH);
 
         // Create a new instance of DatePickerDialog and return it
         final DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), this, year, month, day);
@@ -41,7 +41,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     @Override
     public void onDateSet(final DatePicker datePicker,
                           final int year, final int month, final int dayOfMonth) {
-        Calendar calendar = Calendar.getInstance();
+        final Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month);
         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);

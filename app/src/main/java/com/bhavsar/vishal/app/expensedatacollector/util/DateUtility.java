@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -18,5 +19,10 @@ public class DateUtility {
 
     public DateFormat getDateFormat() {
         return new SimpleDateFormat(DATE_FORMAT_PATTERN, Locale.getDefault());
+    }
+
+    @SneakyThrows
+    public static Date parseDate(final String stringDate) {
+        return getDateFormat().parse(stringDate);
     }
 }

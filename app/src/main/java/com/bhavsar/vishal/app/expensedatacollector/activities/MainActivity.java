@@ -1,10 +1,12 @@
-package com.bhavsar.vishal.app.expensedatacollector;
+package com.bhavsar.vishal.app.expensedatacollector.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.bhavsar.vishal.app.expensedatacollector.R;
 
 public class MainActivity extends AppCompatActivity {
 
