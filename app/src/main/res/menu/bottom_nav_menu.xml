@@ -4,9 +4,9 @@
         android:title="Home"
         android:icon="@drawable/ic_home" />
 
-    <item android:id="@+id/chart"
-        android:title="Charts"
-        android:icon="@drawable/ic_charts" />
+<!--    <item android:id="@+id/chart"-->
+<!--        android:title="Charts"-->
+<!--        android:icon="@drawable/ic_charts" />-->
 
     <item android:id="@+id/settings"
         android:title="Settings"
