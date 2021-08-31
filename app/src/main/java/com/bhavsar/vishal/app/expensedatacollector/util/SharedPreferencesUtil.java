@@ -29,7 +29,7 @@ public class SharedPreferencesUtil {
         editor.apply();
     }
 
-    public String getString(String key, Object defaultValue) {
+    public String getString(final String key, final Object defaultValue) {
         return sharedPreferences.getString(key, (String) defaultValue);
     }
 }

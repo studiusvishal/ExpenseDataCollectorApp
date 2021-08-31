@@ -3,5 +3,8 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
+
+    <!-- User defined colors -->
     <color name="expenseDescriptionColor">#546E7A</color>
+    <color name="calendarColor">#F44336</color>
 </resources>

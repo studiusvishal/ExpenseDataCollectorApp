@@ -4,16 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.AddExpenseActivity">
+    tools:context=".TestActivity">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="85dp" />
+        app:layout_constraintGuide_begin="117dp" />
 
-    <!-- Header label -->
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/materialTextView"
         android:layout_width="wrap_content"
@@ -28,9 +27,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline" />
 
-    <!-- Expense Date -->
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/selectDate"
+        android:id="@+id/testSelectDate"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -38,7 +36,6 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:hint="@string/select_date"
-        app:errorEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,20 +51,18 @@
             android:inputType="none" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Expense Category -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/expenseCategoryMenu"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:hint="@string/select_category"
-        app:errorEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectDate">
+        app:layout_constraintTop_toBottomOf="@+id/testSelectDate">
 
         <AutoCompleteTextView
             android:layout_width="match_parent"
@@ -75,7 +70,6 @@
             android:inputType="none" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Expense Amount -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/expenseAmountEditText"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -85,19 +79,18 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:hint="@string/amount"
-        app:errorEnabled="true"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/expenseCategoryMenu"
         app:startIconDrawable="@drawable/ic_dollar">
+
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Expense Description -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/expenseDescription"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -108,55 +101,40 @@
         android:layout_marginEnd="32dp"
         android:hint="@string/description"
         android:inputType="textMultiLine"
-        app:errorEnabled="true"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/expenseAmountEditText">
+
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Reset Button -->
-
-    <!-- Save Button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonReset"
         style="?attr/materialButtonOutlinedStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="60dp"
+        android:layout_marginEnd="56dp"
         android:text="@string/reset"
+        android:textColor="#F7F2F2"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/saveExpense"
         app:layout_constraintEnd_toStartOf="@+id/saveExpense"
-        app:layout_constraintTop_toTopOf="@+id/saveExpense"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="@+id/saveExpense" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/saveExpense"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="52dp"
+        android:layout_marginEnd="64dp"
         android:text="@string/save"
         android:textSize="20sp"
         android:textStyle="bold"
         app:backgroundTint="#4CAF50"
         app:layout_constraintEnd_toEndOf="@+id/expenseDescription"
         app:layout_constraintTop_toBottomOf="@+id/expenseDescription" />
-
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/saveExpenseRecordProgressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

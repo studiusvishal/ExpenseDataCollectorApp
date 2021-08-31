@@ -8,6 +8,7 @@ import android.view.animation.AnimationUtils;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bhavsar.vishal.app.expensedatacollector.BuildConfig;
 import com.bhavsar.vishal.app.expensedatacollector.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -28,6 +29,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if (BuildConfig.DEBUG) {
+            launchAddExpenseActivity();
+            return;
+        }
+
         final BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setBackground(null);
 
@@ -45,11 +51,15 @@ public class MainActivity extends AppCompatActivity {
         addExpenseBtn.setOnClickListener(view -> {
             clicked = true;
             onAddBtnClicked();
-            final Intent intent = new Intent(this, AddExpenseActivity.class);
-            startActivity(intent);
+            launchAddExpenseActivity();
         });
 
         addTransferBtn.setOnClickListener(view -> {});
+    }
+
+    private void launchAddExpenseActivity() {
+        final Intent intent = new Intent(this, AddExpenseActivity.class);
+        startActivity(intent);
     }
 
     private void onAddBtnClicked() {

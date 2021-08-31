@@ -51,7 +51,9 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/addFab"
         app:layout_constraintEnd_toEndOf="@+id/addFab"
-        app:srcCompat="@drawable/ic_expense" />
+        app:srcCompat="@drawable/ic_expense"
+        android:contentDescription="@string/add_expense"
+        android:focusable="true" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addMoneyTransferFab"

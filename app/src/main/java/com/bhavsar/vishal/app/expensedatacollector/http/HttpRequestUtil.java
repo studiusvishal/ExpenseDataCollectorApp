@@ -2,8 +2,11 @@ package com.bhavsar.vishal.app.expensedatacollector.http;
 
 import static com.bhavsar.vishal.app.expensedatacollector.Constants.KEY_AUTHORIZATION;
 
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -46,11 +49,15 @@ public class HttpRequestUtil {
 
                     @Override
                     public void retry(final VolleyError error) {
-                        Toast.makeText(
-                                        BudgetApp.getContext(),
-                                        "Timeout occurred. Retrying...",
-                                        Toast.LENGTH_SHORT)
-                                .show();
+                        final Context context = BudgetApp.getContext();
+                        ContextCompat.getMainExecutor(context)
+                                .execute(
+                                        () ->
+                                                Toast.makeText(
+                                                                context,
+                                                                "Timeout occurred. Retrying...",
+                                                                Toast.LENGTH_SHORT)
+                                                        .show());
                     }
                 });
     }

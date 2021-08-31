@@ -1,18 +1,17 @@
 <resources>
     <string name="log_in">Log in</string>
     <string name="sign_up">Sign Up</string>
-    <string name="proceed_to_login">Proceed to Login</string>
-    <string name="add_new_expense">Add New Expense</string>
-    <!--    <string name="expense_date">Set date</string>-->
-    <string name="select_date">Select Expense Date</string>
-    <string name="select_date_calendar_icon">Select date calendar icon</string>
+    <string name="add_new_expense_label">Add New Expense</string>
+    <string name="select_date">Expense Date</string>
+    <string name="select_date_calendar_icon">Select date calendar icon</string> <!-- delete -->
     <string name="select_category">Select Expense Category</string>
     <string name="enter_description_for_expense">Enter description for expense</string>
-    <string name="amount">Expense Amount</string>
+    <string name="amount">Amount</string>
     <string name="currency_dollar">$</string>
-    <string name="description">Expense Description:</string>
+    <string name="description">Description</string>
     <string name="reset">Reset</string>
     <string name="save">Save</string>
-    <string name="add_new_expense_label">ADD NEW EXPENSE</string>
     <string name="default_expense_amount">0.00</string>
+    <string name="add_expense">Add Expense</string>
+    <string name="expense_date_format">mm/dd/yyyy</string>
 </resources>
