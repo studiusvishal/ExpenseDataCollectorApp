@@ -1,9 +1,19 @@
-apply plugin: 'com.android.application'
+plugins {
+    id "com.android.application"
+//    id "dagger.hilt.android.plugin"
+//    id "org.jetbrains.kotlin.kapt" version "1.5.30"
+}
 
 android {
     def envConfig
     flavorDimensions "default"
     productFlavors {
+        local {
+            envConfig = getProps('config/local.properties')
+            applicationId envConfig.getProperty("APPLICATION_ID").replace("\"", "")
+            versionCode envConfig.VERSION_CODE.replace("\"", "").toInteger()
+            versionName envConfig.VERSION_NAME.replace("\"", "")
+        }
         dev {
             envConfig = getProps('config/dev.properties')
             applicationId envConfig.getProperty("APPLICATION_ID").replace("\"", "")
@@ -30,16 +40,25 @@ android {
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
+        def stringKeyList = ['APP_NAME', 'VERSION_CODE', 'VERSION_NAME', 'APPLICATION_ID', 'SKIP_LOGIN', 'BASE_URL', 'USERNAME', 'PASSWORD']
+        def intKeyList = ['CONNECT_TIMEOUT', 'READ_TIMEOUT', 'CURRENT_TIMEOUT', 'CURRENT_RETRY_COUNT']
+        def boolKeyList = ['SKIP_LOGIN']
+
         rootProject.ext.config.each(p -> {
-            if (p.key == 'CURRENT_TIMEOUT' || p.key == 'CURRENT_RETRY_COUNT') {
-                buildConfigField 'int', p.key, p.value
-            } else if (p.key == 'APP_NAME') {
-                resValue 'string', p.key.toLowerCase(), p.value.replace("\"", "")
-            } else if (p.key != 'VERSION_CODE' && p.key != 'VERSION_NAME' && p.key != 'APPLICATION_ID') {
-                buildConfigField 'String', p.key, p.value
+            def key = p.key, value = p.value
+            if (intKeyList.contains(key)) {
+                buildConfigField 'int', key, value
+            } else if (boolKeyList.contains(key)) {
+                buildConfigField 'boolean', key, value
+            } else if (stringKeyList.contains(key)) {
+                if (key == 'APP_NAME') {
+                    resValue 'string', key.toLowerCase(), value.replace("\"", "")
+                } else {
+                    buildConfigField 'String', key, value
+                }
             }
         })
-    };
+    }
 
     buildTypes {
         release {
@@ -81,10 +100,15 @@ dependencies {
     compileOnly "org.projectlombok:lombok:1.18.20"
     annotationProcessor "org.projectlombok:lombok:1.18.20"
 
-    // Volley
-    implementation 'com.android.volley:volley:1.2.0'
-    implementation 'com.google.code.gson:gson:2.8.7'
+    // retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
 
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
     implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.0'
+
+//    implementation "com.google.dagger:hilt-android:2.38.1"
+//    implementation "com.google.dagger:hilt-compiler:2.38.1"
 }

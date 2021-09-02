@@ -7,13 +7,15 @@ import android.content.SharedPreferences;
 
 import com.bhavsar.vishal.app.expensedatacollector.BudgetApp;
 
+import lombok.experimental.UtilityClass;
+
 public class SharedPreferencesUtil {
     public static SharedPreferencesUtil instance;
     private static SharedPreferences sharedPreferences;
 
     private SharedPreferencesUtil() {
-        sharedPreferences =
-                BudgetApp.getContext().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        final Context context = BudgetApp.getContext();
+        sharedPreferences = context.getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
     }
 
     public static SharedPreferencesUtil getInstance() {

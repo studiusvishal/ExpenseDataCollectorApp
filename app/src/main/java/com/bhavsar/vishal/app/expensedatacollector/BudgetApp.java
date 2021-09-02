@@ -6,6 +6,7 @@ import android.content.Context;
 import lombok.Getter;
 
 /** https://stackoverflow.com/questions/9445661/how-to-get-the-context-from-anywhere */
+
 public class BudgetApp extends Application {
     @Getter private static BudgetApp instance;
 
