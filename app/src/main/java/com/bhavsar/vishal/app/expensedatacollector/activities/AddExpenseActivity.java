@@ -5,22 +5,28 @@ import static com.bhavsar.vishal.app.expensedatacollector.Constants.KEY_AUTHORIZ
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 
 import com.bhavsar.vishal.app.expensedatacollector.R;
+import com.bhavsar.vishal.app.expensedatacollector.databinding.ActivityAddExpenseBinding;
 import com.bhavsar.vishal.app.expensedatacollector.http.RetrofitHttpUtil;
+import com.bhavsar.vishal.app.expensedatacollector.model.CategoryRecord;
+import com.bhavsar.vishal.app.expensedatacollector.model.CategoryRequest;
 import com.bhavsar.vishal.app.expensedatacollector.model.ExpenseRecord;
 import com.bhavsar.vishal.app.expensedatacollector.model.ExpenseRequest;
 import com.bhavsar.vishal.app.expensedatacollector.util.DateUtility;
 import com.bhavsar.vishal.app.expensedatacollector.util.SharedPreferencesUtil;
+import com.bhavsar.vishal.app.expensedatacollector.util.ToastUtil;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointBackward;
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -29,69 +35,73 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import lombok.val;
 
 public class AddExpenseActivity extends AppCompatActivity {
 
-    private static final List<String> categoriesList =
-            Arrays.asList("Select", "Apartment Rent", "Credit card", "Fuel");
     private final SharedPreferencesUtil sharedPreferencesUtil = SharedPreferencesUtil.getInstance();
 
     private EditText expenseDateEditText;
     private EditText expenseAmountEditText;
     private EditText expenseDescriptionEditText;
+    private AutoCompleteTextView expenseCategoryEditText;
     private ProgressBar progressBar;
     private Context context;
-
-    private AutoCompleteTextView expenseCategoryEditText;
-    private TextInputLayout expenseAmountInputLayout;
-    private TextInputLayout expenseCategoryInputLayout;
-    private TextInputLayout expenseDateInputLayout;
+    private ActivityAddExpenseBinding activity;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_expense);
+        activity = DataBindingUtil.setContentView(this, R.layout.activity_add_expense);
         context = getContext();
 
         // initialize views
-        expenseDateInputLayout = findViewById(R.id.selectDate);
-        expenseDateEditText = expenseDateInputLayout.getEditText();
-
+        expenseDateEditText = activity.expenseDateEditText;
+        expenseCategoryEditText = activity.expenseCategoryAutocompleteTextView;
+        expenseAmountEditText = activity.expenseAmountEditText;
+        expenseDescriptionEditText = activity.expenseDescriptionEditText;
+        progressBar = activity.saveExpenseRecordProgressBar;
         populateExpenseCategories();
 
-        expenseAmountInputLayout = findViewById(R.id.expenseAmountEditText);
-        expenseAmountEditText = expenseAmountInputLayout.getEditText();
-
-        final TextInputLayout expenseDescriptionInputLayout = findViewById(R.id.expenseDescription);
-        expenseDescriptionEditText = expenseDescriptionInputLayout.getEditText();
-
-        final Button resetButton = findViewById(R.id.buttonReset);
-        final Button saveButton = findViewById(R.id.saveExpense);
-        progressBar = findViewById(R.id.saveExpenseRecordProgressBar);
-
         // attach listeners
-        saveButton.setOnClickListener(this::onClickSaveButton);
-        resetButton.setOnClickListener(this::onClickResetButton);
-
-        Objects.requireNonNull(expenseDateEditText);
-        expenseDateEditText.setOnClickListener(this::selectDate);
+        activity.buttonSaveExpense.setOnClickListener(this::onClickSaveButton);
+        activity.buttonReset.setOnClickListener(this::onClickResetButton);
+        activity.expenseDateEditText.setOnClickListener(this::selectDate);
     }
 
     private void populateExpenseCategories() {
-        expenseCategoryInputLayout = findViewById(R.id.expenseCategoryMenu);
-        val adapter = new ArrayAdapter<>(context, R.layout.spinner_item, categoriesList);
-        expenseCategoryEditText = ((AutoCompleteTextView) expenseCategoryInputLayout.getEditText());
-        Objects.requireNonNull(expenseCategoryEditText).setAdapter(adapter);
-        expenseCategoryEditText.setText("Select", false);
+        final CategoryRequest categoryRequest = CategoryRequest.builder()
+                .responseListener(this::getCategoriesOnSuccess)
+                .errorListener(this::getCategoriesOnError)
+                .build();
+        RetrofitHttpUtil.getCategories(categoryRequest);
+    }
+
+    private void getCategoriesOnError(final Throwable throwable) {
+        ToastUtil.showToast("Failed to retrieve expense categories from service. Please try later.");
+    }
+
+    private void getCategoriesOnSuccess(final List<CategoryRecord> categoryRecords) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            final List<String> categoriesList = categoryRecords.stream()
+                    .map(CategoryRecord::getName)
+                    .collect(Collectors.toList());
+            final String defaultCategory = "Select";
+            categoriesList.add(0, defaultCategory);
+            val adapter = new ArrayAdapter<>(context, R.layout.spinner_item, categoriesList);
+            Objects.requireNonNull(expenseCategoryEditText).setAdapter(adapter);
+            expenseCategoryEditText.setText(defaultCategory, false);
+        } else {
+            Log.e("ADD_EXPENSE", "Cannot fetch categories from service.");
+        }
     }
 
     public void onClickResetButton(final View view) {
@@ -109,18 +119,18 @@ public class AddExpenseActivity extends AppCompatActivity {
 
         boolean isValid = true;
         if (StringUtils.isEmpty(expenseDate)) {
-            expenseDateInputLayout.setError("Please select a date.");
+            activity.selectDate.setError("Please select a date.");
             isValid = false;
         }
 
         if (expenseCategory.equalsIgnoreCase("Select")) {
-            expenseCategoryInputLayout.setError("Please select a date.");
+            activity.expenseCategoryMenu.setError("Please select a date.");
             isValid = false;
         }
 
         double expenseAmount = 0.0;
         if (StringUtils.isEmpty(strExpenseAmount)) {
-            expenseAmountInputLayout.setError("Please enter expense amount.");
+            activity.expenseAmountTextInputLayout.setError("Please enter expense amount.");
             isValid = false;
         } else {
             expenseAmount = Double.parseDouble(strExpenseAmount);
