@@ -9,17 +9,19 @@ import static com.bhavsar.vishal.app.expensedatacollector.util.LoginUtility.logi
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 
 import com.bhavsar.vishal.app.expensedatacollector.BuildConfig;
 import com.bhavsar.vishal.app.expensedatacollector.R;
+import com.bhavsar.vishal.app.expensedatacollector.databinding.ActivityLoginBinding;
 import com.bhavsar.vishal.app.expensedatacollector.util.LoginUtility;
 import com.bhavsar.vishal.app.expensedatacollector.util.SharedPreferencesUtil;
-import com.bhavsar.vishal.app.expensedatacollector.util.ToastUtil;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -27,16 +29,14 @@ public class LoginActivity extends AppCompatActivity {
     private EditText editTextPassword;
     private ProgressBar loginProgressBar;
     private final SharedPreferencesUtil sharedPreferencesUtil = SharedPreferencesUtil.getInstance();
+    private ActivityLoginBinding activity;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
-        Log.d("BASE_URL", BASE_URL);
-
+        activity = DataBindingUtil.setContentView(this, R.layout.activity_login);
+        Log.d("LOGIN_ACTIVITY", "Base URL: "+ BASE_URL);
         sharedPreferencesUtil.add(KEY_BASE_URL, BASE_URL);
-        loginProgressBar = findViewById(R.id.progressBar);
 
         // Launch main screen for development
         if (BuildConfig.DEBUG && BuildConfig.SKIP_LOGIN) {
@@ -44,24 +44,32 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        editTextUsername = findViewById(R.id.textUsername);
-        editTextPassword = findViewById(R.id.passwordTextbox);
-        final Button loginButton = findViewById(R.id.loginButton);
+        editTextUsername = activity.usernameEditText;
+        editTextPassword = activity.passwordEditText;
         editTextUsername.requestFocus();
-        loginButton.setOnClickListener(this::onClickLoginButton);
+        activity.loginButton.setOnClickListener(this::onClickLoginButton);
     }
 
     private void onClickLoginButton(final View view) {
         final String username = editTextUsername.getText().toString();
         final String password = editTextPassword.getText().toString();
 
-        // TODO: Add errorEnabled
-        if (username.isEmpty() || password.isEmpty()) {
-            ToastUtil.showToast("Please enter all details.");
+        boolean isValid = true;
+        if (StringUtils.isEmpty(username)) {
+            activity.loginUsernametextInputLayout.setError("Please enter username.");
+            isValid = false;
+        }
+        if (StringUtils.isEmpty(password)) {
+            activity.loginPasswordTextInputLayout.setError("Please enter password.");
+            isValid = false;
+        }
+
+        if (!isValid) {
             return;
         }
-        loginProgressBar.setVisibility(View.VISIBLE);
-        LoginUtility.login(username, password);
+
+        activity.loginProgressBar.setVisibility(View.VISIBLE);
+        login(username, password);
     }
 
     private void startMainActivity() {

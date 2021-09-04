@@ -14,6 +14,8 @@ import com.bhavsar.vishal.app.expensedatacollector.http.RetrofitHttpUtil;
 import com.bhavsar.vishal.app.expensedatacollector.model.LoginRequest;
 import com.bhavsar.vishal.app.expensedatacollector.model.LoginRecord;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -34,12 +36,15 @@ public final class LoginUtility {
 
     @NonNull
     private static LoginRecord prepareBody(final String username, final String password) {
-        return LoginRecord.builder().username(username).password(password).build();
+        return LoginRecord.builder()
+                .username(username)
+                .password(password)
+                .build();
     }
 
     private static void onSuccess(final String result) {
-        if (result.isEmpty()) {
-            loginFailed(new RuntimeException("Authorization failed!!!"));
+        if (StringUtils.isEmpty(result)) {
+            loginFailed(new RuntimeException("AuthToken is empty. Login failed!!!"));
             return;
         }
         sharedPreferences.add(KEY_AUTHORIZATION, result);
@@ -51,7 +56,7 @@ public final class LoginUtility {
     }
 
     private static void onError(final Throwable error) {
-        Log.e("APP_LOGIN", Arrays.toString(error.getStackTrace()));
+        Log.e("LOGIN_UTILITY", Arrays.toString(error.getStackTrace()));
         loginFailed(error);
     }
 

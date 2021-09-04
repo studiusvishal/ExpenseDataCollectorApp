@@ -1,6 +1,4 @@
 <resources>
-    <string name="log_in">Log in</string>
-    <string name="sign_up">Sign Up</string>
     <string name="add_new_expense_label">Add New Expense</string>
     <string name="select_date">Expense Date</string>
     <string name="select_date_calendar_icon">Select date calendar icon</string> <!-- delete -->

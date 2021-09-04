@@ -154,8 +154,10 @@ public class AddExpenseActivity extends AppCompatActivity {
     }
 
     private void saveExpense(final ExpenseRecord expenseRecord) {
-        val expenseRequest =
-                ExpenseRequest.builder().requestBody(expenseRecord).headers(getHeaders()).build();
+        val expenseRequest = ExpenseRequest.builder()
+                        .requestBody(expenseRecord)
+                        .headers(getHeaders())
+                        .build();
         RetrofitHttpUtil.saveExpenseRecord(expenseRequest);
     }
 
