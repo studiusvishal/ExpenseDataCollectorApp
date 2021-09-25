@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         addBtn.setOnClickListener(view -> onAddBtnClicked());
 
         addExpenseBtn.setOnClickListener(view -> {
-            Toast.makeText(BudgetApp.getContext())
         });
 
         addTransferBtn.setOnClickListener(view -> {});
